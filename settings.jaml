@@ -1,0 +1,18 @@
+%YAML:1.0
+---
+VideoLocation: "/home/michi/Documents/Uni/UZL/5_Masterarbeit/KiloBot/Videos/3_20180320/final.mp4"
+wantedDots: 51
+minThreshold: 150
+maxThreshold: 181
+minBlueHue: 77
+maxBlueHue: 153
+minBlueSat: 0
+maxBlueSat: 194
+minBlueVal: 0
+maxBlueVal: 255
+minRedHue: 161
+maxRedHue: 31
+minRedSat: 0
+maxRedSat: 193
+minRedVal: 0
+maxRedVal: 255
