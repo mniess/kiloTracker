@@ -1,6 +1,6 @@
 %YAML:1.0
 ---
-VideoLocation: "/home/michi/Documents/Uni/UZL/5_Masterarbeit/KiloBot/Videos/3_20180320/final.mp4"
+VideoLocation: "[PATH/TO/VIDEO.mp4]"
 wantedDots: 51
 minThreshold: 150
 maxThreshold: 181
