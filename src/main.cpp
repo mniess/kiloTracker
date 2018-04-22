@@ -15,9 +15,9 @@ using std::string;
 
 int main(int argc, char **argv) {
   const std::string keys = "{help h usage ? || Show this message}"
-      "{@settingsFile| settings.jaml| Path to settings file}"
-      "{nogui||Run without gui}"
-      "{v video|| Path to video, overrides value in settings file}";
+                           "{@settingsFile| settings.jaml| Path to settings file}"
+                           "{nogui||Run without gui}"
+                           "{v video|| Path to video, overrides value in settings file}";
   cv::CommandLineParser parser(argc, reinterpret_cast<const char *const *>(argv), keys);
   parser.about("KiloTracker v1.0");
   if (parser.has("help")) {
@@ -34,7 +34,7 @@ int main(int argc, char **argv) {
     return 0;
   }
 
-  if(!settingsLoaded) {
+  if (!settingsLoaded) {
     cout << "writing new settings file to " << settingsPath << endl;
   }
 
@@ -50,7 +50,11 @@ int main(int argc, char **argv) {
 
     std::string filename = settings.videoLoc;
     int last = filename.find_last_of("/");
-    filename.replace(last, filename.length() - last, "/counts.csv");
+    if (last < 0) { //No absolute path
+      filename = "counts.csv";
+    } else {
+      filename.replace(last, filename.length() - last, "/counts.csv");
+    }
     std::cout << filename << std::endl;
     std::ofstream logger;
     logger.open(filename);
