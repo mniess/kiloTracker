@@ -8,6 +8,7 @@
 
 #define VIDEOLOC "VideoLocation"
 #define WANTEDDOTS "wantedDots"
+#define MAXTRACEDIST "maxTraceDist"
 
 #define MINTHRESHOLD "minThreshold"
 #define MAXTHRESHOLD "maxThreshold"
@@ -36,6 +37,7 @@ public:
 
   std::string videoLoc;
   int wantedDots;
+  int maxTraceDist;
   int minThreshold;
   int maxThreshold;
   int minBlueHue;

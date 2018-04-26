@@ -17,7 +17,7 @@ Mat Processor::createThresholdImage(Mat img) {
   cv::threshold(grayIMG, grayIMG, pSettings->minThreshold, 255, cv::THRESH_BINARY);
   cv::cvtColor(grayIMG, thresImg, cv::COLOR_GRAY2BGR);
 
-  cv::bitwise_and(thresImg,img,thresImg);
+  cv::bitwise_and(thresImg, img, thresImg);
   return thresImg;
 }
 

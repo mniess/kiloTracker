@@ -14,20 +14,25 @@ bool Settings::write(string filename) const {
   }
   fs << VIDEOLOC << videoLoc;
   fs << WANTEDDOTS << wantedDots;
+  fs << MAXTRACEDIST << maxTraceDist;
+
   fs << MINTHRESHOLD << minThreshold;
   fs << MAXTHRESHOLD << maxThreshold;
+
   fs << MINBLUEHUE << minBlueHue;
   fs << MAXBLUEHUE << maxBlueHue;
   fs << MINBLUESAT << minBlueSat;
   fs << MAXBLUESAT << maxBlueSat;
   fs << MINBLUEVAL << minBlueVal;
   fs << MAXBLUEVAL << maxBlueVal;
+
   fs << MINREDHUE << minRedHue;
   fs << MAXREDHUE << maxRedHue;
   fs << MINREDSAT << minRedSat;
   fs << MAXREDSAT << maxRedSat;
   fs << MINREDVAL << minRedVal;
   fs << MAXREDVAL << maxRedVal;
+
   fs.release();
   return true;
 }
@@ -40,20 +45,25 @@ bool Settings::read(string filename) {
 
   fs[VIDEOLOC] >> videoLoc;
   fs[WANTEDDOTS] >> wantedDots;
+  fs[MAXTRACEDIST] >> maxTraceDist;
+
   fs[MINTHRESHOLD] >> minThreshold;
   fs[MAXTHRESHOLD] >> maxThreshold;
+
   fs[MINREDHUE] >> minRedHue;
   fs[MAXREDHUE] >> maxRedHue;
   fs[MINREDSAT] >> minRedSat;
   fs[MAXREDSAT] >> maxRedSat;
   fs[MINREDVAL] >> minRedVal;
   fs[MAXREDVAL] >> maxRedVal;
+
   fs[MINBLUEHUE] >> minBlueHue;
   fs[MAXBLUEHUE] >> maxBlueHue;
   fs[MINBLUESAT] >> minBlueSat;
   fs[MAXBLUESAT] >> maxBlueSat;
   fs[MINBLUEVAL] >> minBlueVal;
   fs[MAXBLUEVAL] >> maxBlueVal;
+
   fs.release();
   return true;
 }

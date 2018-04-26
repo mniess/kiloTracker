@@ -1,4 +1,5 @@
 #include "Gui.hpp"
+#include "Tracer.h"
 
 #include <opencv2/highgui.hpp>  // GUI
 #include <opencv2/imgproc.hpp>
@@ -51,10 +52,13 @@ Gui::Gui(Settings *set) {
 }
 
 void Gui::start() {
+  int currFrame;
   Mat rawImg;
   Mat marksImg;
   Mat thresImg;
   std::vector<cv::KeyPoint> keypoints;
+
+  Tracer tracer(settings);
 
   if (!(cap.isOpened() && cap.read(rawImg))) {
     std::cout << "Could not get Img from capture!" << std::endl;
@@ -86,6 +90,17 @@ void Gui::start() {
     std::vector<std::vector<cv::Point> > blueContours = processor.findDots(blueImg, marksImg, YELLOW);
     int blueDots = blueContours.size();
 
+    //Tracing
+    redContours.insert(redContours.end(), blueContours.begin(), blueContours.end());
+    tracer.processNewContours(redContours, currFrame++);
+    std::vector<std::vector<cv::Point>> traces = tracer.getcurrPointTraces();
+    std::cout << traces.size() << std::endl;
+    for (int i = 0; i <traces.size(); ++i) {
+      Mat rgb;
+      Mat hsv(1,1, CV_8UC3, cv::Scalar(i*31 %180,255,255));
+      cvtColor(hsv, rgb, CV_HSV2BGR);
+      cv::polylines(marksImg,traces[i],false,cv::Scalar(rgb.data[0], rgb.data[1], rgb.data[2]));
+    }
     //Final Image
     cv::imshow("Image", marksImg);
 

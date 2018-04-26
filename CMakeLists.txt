@@ -8,11 +8,12 @@ find_package(OpenCV REQUIRED)
 
 # Source files
 SET(KILOTRACKER_SRC
+        ${RESOURCE_FILE}
         ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Gui.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Settings.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Processor.cpp
-        ${RESOURCE_FILE}
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Tracer.cpp
         )
 
 # Build
