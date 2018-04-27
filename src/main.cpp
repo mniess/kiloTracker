@@ -6,8 +6,9 @@
 #include "opencv2/highgui.hpp"
 #include "opencv2/features2d.hpp"
 
-#include "Settings.hpp"
-#include "Gui.hpp"
+#include "Settings.h"
+#include "Gui.h"
+#include "Cli.h"
 
 using std::cout;
 using std::endl;
@@ -19,7 +20,7 @@ int main(int argc, char **argv) {
                            "{nogui||Run without gui}"
                            "{v video|| Path to video, overrides value in settings file}";
   cv::CommandLineParser parser(argc, reinterpret_cast<const char *const *>(argv), keys);
-  parser.about("KiloTracker v1.0");
+  parser.about("KiloTracker v1.0\nKeyboard control:\n\t'S' for Start\n\t'P' for Pause\n\t'ESC' to exit");
   if (parser.has("help")) {
     parser.printMessage();
     return 0;
@@ -44,36 +45,8 @@ int main(int argc, char **argv) {
   }
 
   if (parser.has("nogui")) {
-    Processor p = Processor(&settings);
-    cv::VideoCapture cap = cv::VideoCapture(settings.videoLoc);
-    cv::Mat m, thres;
-
-    std::string filename = settings.videoLoc;
-    int last = filename.find_last_of("/");
-    if (last < 0) { //No absolute path
-      filename = "counts.csv";
-    } else {
-      filename.replace(last, filename.length() - last, "/counts.csv");
-    }
-    std::cout << filename << std::endl;
-    std::ofstream logger;
-    logger.open(filename);
-    logger << "Blue, Red\n";
-
-    int i = 0;
-    while (cap.read(m)) {
-      thres = p.createThresholdImage(m);
-      cv::Mat b = p.findBlueBlobs(thres);
-      unsigned long blueDots = p.findDots(b).size();
-      unsigned long redDots = p.findDots(p.findRedBlobs(thres)).size();
-      logger << blueDots << ", " << redDots << "\n";
-      ++i;
-      if (i % 100 == 0) {
-        std::cout << i << " Frames processed" << std::endl;
-        logger.flush();
-      }
-    }
-    logger.close();
+    Cli cli(&settings);
+    cli.start();
   } else {
     Gui gui(&settings);
     gui.start();

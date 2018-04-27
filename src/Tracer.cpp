@@ -6,49 +6,53 @@ Tracer::Tracer(Settings *s) {
 }
 
 void Tracer::processNewContours(std::vector<std::vector<cv::Point>> contours, int frame) {
-  std::vector<cv::Point> points = contoursToPoints(contours);
-  if (traces.empty()) {
-    initTraces(points, frame);
-    return;
-  }
-  //find each trace its next point
-  for (auto &trace: traces) {
-    int i = findNearestPoint(trace.back(), points, settings->maxTraceDist);
-    if (i != -1) {
-      //just update frame if point did not change
-      if (points[i] == trace.back().p) {
-        trace.back().frame = frame;
+  if (settings->maxTraceDist != 0) {
+    std::vector<cv::Point> points = contoursToPoints(contours);
+    if (traces.empty()) {
+      initTraces(points, frame);
+      return;
+    }
+
+    //find each trace its next point
+    for (auto &trace: traces) {
+      int i = findNearestPoint(trace.back(), points, settings->maxTraceDist);
+      if (i != -1) {
+        //just update frame if point did not change
+        if (points[i] == trace.back().p) {
+          trace.back().frame = frame;
+        } else {
+          trace.emplace_back(points[i], frame);
+        }
+        points.erase(points.begin() + i);
       } else {
-        trace.emplace_back(points[i], frame);
+        finishedTraces.push_back(trace);
       }
-      points.erase(points.begin() + i);
-    } else {
-      finishedTraces.push_back(std::vector(trace));
     }
-  }
 
-  for (auto &finTrace: finishedTraces) {
-    int i = findNearestPoint(finTrace.back(), points, settings->maxTraceDist * 2);
-    if (i != -1) {
-      finTrace.emplace_back(points[i], frame);
-      points.erase(points.begin() + i);
-      traces.push_back(std::vector(finTrace));
-      std::cout << "Found a lost trace!" << std::endl;
+    //Match leftover points to old traces
+    for (auto &finTrace: finishedTraces) {
+      int i = findNearestPoint(finTrace.back(), points, settings->maxTraceDist * 2);
+      if (i != -1) {
+        finTrace.emplace_back(points[i], frame);
+        points.erase(points.begin() + i);
+        traces.push_back(finTrace);
+      }
     }
-  }
-  //Create new Traces for left overs
-  for (auto &point: points) {
-    traces.emplace_back(1, TracePoint(point, frame));
-  }
 
-  cleanUpTraces(frame);
+    //Create new Traces for left overs
+    for (auto &point: points) {
+      traces.emplace_back(1, TracePoint(point, frame));
+    }
+
+    cleanUpTraces(frame);
+  }
 }
 
 std::vector<std::vector<TracePoint>> Tracer::getTraces() {
   std::vector<std::vector<TracePoint>> allTraces;
   allTraces.reserve(finishedTraces.size() + traces.size());
-  allTraces.insert(allTraces.end(), finishedTraces.begin(), finishedTraces.end());
   allTraces.insert(allTraces.end(), traces.begin(), traces.end());
+  allTraces.insert(allTraces.end(), finishedTraces.begin(), finishedTraces.end());
   return allTraces;
 }
 

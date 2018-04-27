@@ -1,12 +1,12 @@
 #ifndef KILOTRACKER_PROCESSOR_H
 #define KILOTRACKER_PROCESSOR_H
 
-#include "Settings.hpp"
+#include "Settings.h"
 
-class Processor {
+class Detector {
 
 public:
-  Processor(Settings *settings);
+  Detector(Settings *settings);
   cv::Mat createThresholdImage(cv::Mat img);
   cv::Mat findRedBlobs(cv::Mat rawImg);
   cv::Mat findBlueBlobs(cv::Mat mat);
@@ -14,7 +14,7 @@ public:
                                                cv::Mat drawMat = cv::Mat(),
                                                cv::Scalar_<double> color = cv::Scalar(255, 0, 0));
 private:
-  Settings *pSettings;
+  Settings *settings;
   cv::Mat whiteNoiseCanceling(cv::Mat mat);
 };
 

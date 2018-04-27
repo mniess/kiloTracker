@@ -1,4 +1,4 @@
-#include "Settings.hpp"
+#include "Settings.h"
 
 using std::string;
 using cv::FileStorage;

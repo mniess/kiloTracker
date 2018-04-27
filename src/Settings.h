@@ -1,5 +1,5 @@
-#ifndef SETTINGS_HPP
-#define SETTINGS_HPP
+#ifndef SETTINGS_H
+#define SETTINGS_H
 
 #include <opencv2/features2d.hpp>
 
@@ -27,6 +27,10 @@
 #define MINREDVAL "minRedVal"
 #define MAXREDVAL "maxRedVal"
 
+
+/**
+ * Read and write all settings, no getters for values
+ */
 class Settings {
 public:
   Settings();
@@ -35,17 +39,23 @@ public:
 
   bool read(std::string filename);
 
+  // Path to the videolocation
   std::string videoLoc;
+  // how many dots should be in the image?
   int wantedDots;
+  // look in the radius of maxTraceDist for the last point, zero to disable
   int maxTraceDist;
+
   int minThreshold;
   int maxThreshold;
+
   int minBlueHue;
   int maxBlueHue;
   int minBlueSat;
   int maxBlueSat;
   int minBlueVal;
   int maxBlueVal;
+
   int minRedHue;
   int maxRedHue;
   int minRedSat;
@@ -55,4 +65,4 @@ public:
 private:
 };
 
-#endif  // SETTINGS_HPP
+#endif  // SETTINGS_H

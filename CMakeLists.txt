@@ -12,9 +12,9 @@ SET(KILOTRACKER_SRC
         ${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Gui.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Settings.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/src/Processor.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/src/Detector.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/src/Tracer.cpp
-        )
+        src/Cli.cpp src/Cli.h)
 
 # Build
 ADD_EXECUTABLE(KiloTracker ${KILOTRACKER_SRC})
