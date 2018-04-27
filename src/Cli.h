@@ -22,6 +22,7 @@ private:
    * @return path+filename or only filename, if video is in current folder
    */
   std::string getFilepath(std::string filename) const;
+  void writeTraces(Tracer tracer);
 };
 
 #endif //KILOTRACKER_CLI_H
