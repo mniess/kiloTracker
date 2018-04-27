@@ -2,7 +2,7 @@
 ---
 VideoLocation: "[PATH/TO/VIDEO.mp4]"
 wantedDots: 51
-maxTraceDist: 1000
+maxTraceDist: 30
 minThreshold: 150
 maxThreshold: 181
 minBlueHue: 77

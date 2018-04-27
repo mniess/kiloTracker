@@ -25,8 +25,8 @@ private:
   cv::Point getCenter(std::vector<cv::Point> contour);
   void initTraces(std::vector<cv::Point> vector, int i);
   std::vector<cv::Point> contoursToPoints(std::vector<std::vector<cv::Point>> vector);
-  int findNearestPoint(TracePoint &pivotPoint, std::vector<cv::Point> candidates);
-  void removeFinishedTraces(int lastFrame);
+  int findNearestPoint(TracePoint &pivotPoint, std::vector<cv::Point> candidates, float maxTraceDist);
+  void cleanUpTraces(int currFrame);
   bool isOld(std::vector<TracePoint>, int lastFrame);
 
   std::vector<std::vector<cv::Point>> convertTracePointsToPoints(std::vector<std::vector<TracePoint>> traces);

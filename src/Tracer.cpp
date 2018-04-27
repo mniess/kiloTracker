@@ -13,17 +13,27 @@ void Tracer::processNewContours(std::vector<std::vector<cv::Point>> contours, in
   }
   //find each trace its next point
   for (auto &trace: traces) {
-    int i = findNearestPoint(trace.back(), points);
+    int i = findNearestPoint(trace.back(), points, settings->maxTraceDist);
     if (i != -1) {
       //just update frame if point did not change
-      if(points[i] == trace.back().p) {
+      if (points[i] == trace.back().p) {
         trace.back().frame = frame;
       } else {
         trace.emplace_back(points[i], frame);
       }
       points.erase(points.begin() + i);
     } else {
-      finishedTraces.push_back(trace);
+      finishedTraces.push_back(std::vector(trace));
+    }
+  }
+
+  for (auto &finTrace: finishedTraces) {
+    int i = findNearestPoint(finTrace.back(), points, settings->maxTraceDist * 2);
+    if (i != -1) {
+      finTrace.emplace_back(points[i], frame);
+      points.erase(points.begin() + i);
+      traces.push_back(std::vector(finTrace));
+      std::cout << "Found a lost trace!" << std::endl;
     }
   }
   //Create new Traces for left overs
@@ -31,7 +41,7 @@ void Tracer::processNewContours(std::vector<std::vector<cv::Point>> contours, in
     traces.emplace_back(1, TracePoint(point, frame));
   }
 
-  removeFinishedTraces(frame - 1);
+  cleanUpTraces(frame);
 }
 
 std::vector<std::vector<TracePoint>> Tracer::getTraces() {
@@ -52,9 +62,9 @@ std::vector<std::vector<cv::Point>> Tracer::getcurrPointTraces() {
 
 std::vector<std::vector<cv::Point>> Tracer::convertTracePointsToPoints(std::vector<std::vector<TracePoint>> traces) {
   std::vector<std::vector<cv::Point>> pointTraces;
-  for(auto &trace:traces) {
+  for (auto &trace:traces) {
     std::vector<cv::Point> pointTrace;
-    for(auto &tracePoint:trace) {
+    for (auto &tracePoint:trace) {
       pointTrace.push_back(tracePoint.p);
     }
     pointTraces.push_back(pointTrace);
@@ -62,10 +72,9 @@ std::vector<std::vector<cv::Point>> Tracer::convertTracePointsToPoints(std::vect
   return pointTraces;
 }
 
-
 void Tracer::initTraces(std::vector<cv::Point> points, int frame) {
   for (auto point:points) {
-    traces.emplace_back(1,TracePoint(point, frame));
+    traces.emplace_back(1, TracePoint(point, frame));
   }
 }
 
@@ -86,9 +95,9 @@ cv::Point Tracer::getCenter(std::vector<cv::Point> contour) {
   center.y /= contour.size();
   return center;
 }
-int Tracer::findNearestPoint(TracePoint &pivotPoint, std::vector<cv::Point> candidates) {
+int Tracer::findNearestPoint(TracePoint &pivotPoint, std::vector<cv::Point> candidates, float maxTraceDist) {
   int nearestPoint = -1;
-  float nearestSquareDist = settings->maxTraceDist;
+  float nearestSquareDist = maxTraceDist * maxTraceDist;
   for (int i = 0; i < candidates.size(); ++i) {
     cv::Point diff = pivotPoint.p - candidates[i];
     float sqareDist = diff.x * diff.x + diff.y * diff.y;
@@ -102,16 +111,22 @@ int Tracer::findNearestPoint(TracePoint &pivotPoint, std::vector<cv::Point> cand
   return nearestPoint;
 }
 
-void Tracer::removeFinishedTraces(int lastFrame) {
+void Tracer::cleanUpTraces(int currFrame) {
+  //Remove old traces from current traces (they where added to old traces before)
   traces.erase(
       std::remove_if(traces.begin(),
                      traces.end(),
                      [&](std::vector<TracePoint> x) {
-                       return x.back().frame == lastFrame; //(x,lastFrame);
+                       return x.back().frame == (currFrame - 1);
                      }),
       traces.end());
-}
 
-static bool isOld(std::vector<TracePoint> x, int frame) {
-  return x.back().frame != frame;
+  //Remove reactivated traces from old traces (they where added to current traces before)
+  finishedTraces.erase(
+      std::remove_if(finishedTraces.begin(),
+                     finishedTraces.end(),
+                     [&](std::vector<TracePoint> x) {
+                       return x.back().frame == currFrame;
+                     }),
+      finishedTraces.end());
 }
