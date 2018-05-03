@@ -8,6 +8,7 @@
 #define BLUE cv::Scalar(255, 0, 0)
 #define YELLOW cv::Scalar(0, 255, 255)
 #define GREEN cv::Scalar(0, 255, 0)
+#define GRAY cv::Scalar(150,150,150)
 
 using std::string;
 using cv::Mat;
@@ -17,6 +18,7 @@ Gui::Gui(Settings *set) {
   settings = set;
 
   cv::namedWindow("Image", CV_WINDOW_AUTOSIZE);
+  cv::setMouseCallback("Image", mouseCallback, this);
   cv::namedWindow("Threshold", CV_WINDOW_AUTOSIZE);
   cv::namedWindow("Blue", CV_WINDOW_AUTOSIZE);
   cv::namedWindow("Red", CV_WINDOW_AUTOSIZE);
@@ -42,7 +44,6 @@ void Gui::start() {
   int currFrame;
   Mat rawImg, marksImg, thresImg, redImg, blueImg;
   std::vector<cv::KeyPoint> keypoints;
-  std::vector<std::vector<cv::Point>> traces;
   cv::VideoCapture cap(settings->videoLoc);
   Tracer tracer(settings);
   Detector detector(settings);
@@ -78,14 +79,24 @@ void Gui::start() {
     int blueDots = blueContours.size();
 
     //Tracing
-    if (!pause) {
+    if (!pause) { //Only process with new Frames
       redContours.insert(redContours.end(), blueContours.begin(), blueContours.end());
       tracer.processNewContours(redContours, currFrame++);
       traces = tracer.getPointTraces();
-    }
-
-    for (int i = 0; i < traces.size(); ++i) {
-      cv::polylines(marksImg, traces[i], false, HSV2BGR(cv::Scalar(i * 31 % 180, 255, 255)));
+      //Draw all traces
+      for (int i = 0; i < traces.size(); ++i) {
+        cv::polylines(marksImg, traces[i], false, HSV2BGR(cv::Scalar(i * 31 % 180, 255, 255)));
+      }
+    } else { // Highlight single traces in pause
+      for (int i = 0; i < traces.size(); ++i) {
+        cv::polylines(marksImg, traces[i], false, GRAY);
+      }
+      if (traceA >= 0 && traceA < traces.size()) {
+        cv::polylines(marksImg, traces[traceA], false, RED, 2);
+      }
+      if (traceB >= 0 && traceB < traces.size() && traceA != traceB) {
+        cv::polylines(marksImg, traces[traceB], false, BLUE, 2);
+      }
     }
 
     //Final Image
@@ -131,4 +142,33 @@ bool Gui::keyEvents() {
     pause = false;
   }
   return false;
+}
+
+void Gui::mouseCallback(int event, int x, int y, int flags, void *userdata) {
+  reinterpret_cast<Gui *>(userdata)->mouseClick(event, x, y);
+}
+
+void Gui::mouseClick(int event, int x, int y) {
+  if (pause) {
+    if (event == cv::EVENT_LBUTTONUP) {
+      traceA = getClosestTrace(cv::Point(x, y));
+    }
+    if (event == cv::EVENT_RBUTTONUP)
+      traceB= getClosestTrace(cv::Point(x, y));
+  }
+}
+
+int Gui::getClosestTrace(cv::Point lastMouseClick) {
+  int closestI = -1;
+  float dist = std::numeric_limits<float>::infinity();
+  for (int i = 0; i < traces.size(); ++i) {
+    cv::Point diff = lastMouseClick - traces[i].back();
+    float sqareDist = diff.x * diff.x + diff.y * diff.y;
+
+    if (sqareDist < dist && traces[i].size() > 1) {
+      closestI = i;
+      dist = sqareDist;
+    }
+  }
+  return closestI;
 }
