@@ -1,6 +1,6 @@
 # kiloTracker
 
-Was made for tracking kilobots on a video from overhead camera, but can be used for a general tracking red and blue dots.
+Was made for tracking and tracing kilobots on a video from overhead camera, but can be used for general tracking/tracing red and blue dots.
 
 Only tested with linux
 
@@ -10,7 +10,9 @@ Only tested with linux
 
 ## Compile
 
-Use cmake and make to compile. Suggested workflow on linux:
+Use provided cmake file to compile.
+
+Suggested workflow on linux:
   1. `cd [git source]`
   1. `mkdir build`
   1. `cd build`
@@ -23,5 +25,6 @@ Use cmake and make to compile. Suggested workflow on linux:
 See `kiloTracker --help`
 
 ### GUI
-
-Use key 's' for start and 'p' for pause. 'esc' closes all windows and safes current parameters to settings file
+Press 's' for start
+Press 'p' for pause
+Press 'esc' to quit and safe current parameters to settings file
