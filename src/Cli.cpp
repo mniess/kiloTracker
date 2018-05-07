@@ -18,7 +18,7 @@ void Cli::start() {
   counts.open(getFilepath("counts.csv"));
   counts << "Blue, Red\n";
 
-  int i;
+  int i = 0;
   while (cap.read(m)) {
     //Detect
     thres = detector.createThresholdImage(m);
@@ -51,11 +51,10 @@ void Cli::writeTraces(Tracer tracer) {
 
   for(auto &trace:tracer.getTraces()) {
     for(auto tracepoint:trace) {
-      traceLog << tracepoint.p.x << "," << tracepoint.p.y << "," << tracepoint.frame << "; ";
+      traceLog << tracepoint.p.x << "," << tracepoint.p.y << "," << tracepoint.frame << ",";
     }
     traceLog << std::endl;
   }
-
   traceLog.close();
 }
 

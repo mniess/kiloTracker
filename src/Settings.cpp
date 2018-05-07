@@ -65,5 +65,9 @@ bool Settings::read(string filename) {
   fs[MAXBLUEVAL] >> maxBlueVal;
 
   fs.release();
+
+  if(maxTraceDist == 0) {
+    std::cout << "Warning: Tracing disabled! maxTraceDist==0" << std::endl;
+  }
   return true;
 }

@@ -17,12 +17,7 @@ void Tracer::processNewContours(std::vector<std::vector<cv::Point>> contours, in
     for (auto &trace: traces) {
       int i = findNearestPoint(trace.back(), points, settings->maxTraceDist);
       if (i != -1) {
-        //just update frame if point did not change
-        if (points[i] == trace.back().p) {
-          trace.back().frame = frame;
-        } else {
-          trace.emplace_back(points[i], frame);
-        }
+        trace.emplace_back(points[i], frame);
         points.erase(points.begin() + i);
       } else {
         finishedTraces.push_back(trace);
